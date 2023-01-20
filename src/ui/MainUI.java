@@ -279,6 +279,7 @@ public class MainUI {
         checkEnableEditPlayerButton();
         checkEnableFindMatchButton();
         checkEnableRecordMatchButton();
+        checkEnableDiscardMatchButton();
     }
 
     private void checkEnableReturningPlayerButton() {
@@ -303,6 +304,11 @@ public class MainUI {
 
     private void checkEnableRecordMatchButton() {
         recordMatchButton.setEnabled(
+                activeMatchesList.getSelectedValue() != null);
+    }
+
+    private void checkEnableDiscardMatchButton() {
+        discardMatchButton.setEnabled(
                 activeMatchesList.getSelectedValue() != null);
     }
 
@@ -341,14 +347,16 @@ public class MainUI {
     private void discardMatch() {
         Match m = activeMatchesList.getSelectedValue();
         String discardMatchMessage = "";
-        discardMatchMessage += "Are you sure you would like to discard this match: ";
+        discardMatchMessage += "Are you sure you would like to discard this match:\n";
         discardMatchMessage += m;
         int result = JOptionPane.showConfirmDialog(window, discardMatchMessage,
                 "Confirm Discard", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
-
+            Runner.getRunner().discardMatch(m);
         }
+
+        update();
     }
 
     private class MainUIListener implements ActionListener, ListSelectionListener{
@@ -386,7 +394,7 @@ public class MainUI {
                         break;
 
                     case "MainUI.Button.discardMatch" :
-
+                        discardMatch();
                         break;
                 }
             } catch (Exception e1) {

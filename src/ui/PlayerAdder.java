@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import item.Player;
 import run.Runner;
 
 public class PlayerAdder {
@@ -149,11 +150,17 @@ public class PlayerAdder {
      * 
      */
     private void addButtonPressed() {
-        Runner.getRunner().playerArrived(
-                Runner.getRunner().AddPlayer(
-                        nameField.getText(), eidField.getText()));
+        Player newPlayer;
+
+        newPlayer = Runner.getRunner().AddPlayer(
+                nameField.getText(), eidField.getText());
+
+        Runner.getRunner().playerArrived(newPlayer);
+
         window.dispatchEvent(
                 new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
+
+        parent.update();
     }
 
     /**

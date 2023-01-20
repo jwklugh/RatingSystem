@@ -77,6 +77,23 @@ public class Match implements Comparable<Match> {
     }
 
     /**
+     * Sets the player specified by player1 if the match has not yet been played
+     * @param p - The player to set to
+     * @param player1 - Whether to set to player 1 or 2
+     */
+    public boolean setPlayer(Player p, boolean player1) {
+        if (status == 0) {
+            if(player1) {
+                p1 = p;
+            } else {
+                p2 = p;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Determines if another Player is the same as this Player
      */
     @Override

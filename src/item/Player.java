@@ -71,6 +71,10 @@ public class Player implements Comparable<Player> {
         rating += change;
     }
 
+    public void setRating(double newRating) {
+        rating = newRating;
+    }
+
     /**
      * Determines if another Player is the same as this Player
      */
