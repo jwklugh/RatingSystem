@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -29,6 +30,7 @@ public class MainUI {
     private JPanel basePanel;
     private JPanel playersPanel;
     private JPanel attendenceListPanel;
+    private JPanel playerListPanel;
     private JPanel rankingsPanel;
     private JPanel matchesPanel;
     private JPanel activeMatchesPanel;
@@ -37,14 +39,22 @@ public class MainUI {
     private JPanel playerControlPanel;
     private JPanel matchControlPanel;
 
+    private JScrollPane attendenceScrollPane;
+    private JScrollPane playerListScrollPane;
+    private JScrollPane rankingsScrollPane;
+    private JScrollPane activeMatchesScrollPane;
+    private JScrollPane previousMatchesScrollPane;
+
     private JLabel attendenceListLabel;
+    private JLabel playerListLabel;
     private JLabel rankingsLabel;
     private JLabel controlsLabel;
     private JLabel activeMatchesLabel;
     private JLabel previousMatchesLabel;
 
     private JList<Player> attendenceList;
-    private JList<Player> rankingsList;
+    private JList<Player> playerList;
+    private JList<String> rankingsList;
     private JList<Match> activeMatchesList;
     private JList<Match> previousMatchesList;
 
@@ -79,6 +89,7 @@ public class MainUI {
         basePanel = new JPanel();
         playersPanel = new JPanel();
         attendenceListPanel = new JPanel();
+        playerListPanel = new JPanel();
         rankingsPanel = new JPanel();
         matchesPanel = new JPanel();
         activeMatchesPanel = new JPanel();
@@ -88,15 +99,23 @@ public class MainUI {
         matchControlPanel = new JPanel();
 
         attendenceListLabel = new JLabel("Attendence List");
+        playerListLabel = new JLabel("Players");
         rankingsLabel = new JLabel("Rankings");
         controlsLabel = new JLabel("Controls");
         activeMatchesLabel = new JLabel("Active Matches");
         previousMatchesLabel = new JLabel("Previous Matches");
 
         attendenceList = new JList<>();
+        playerList = new JList<>();
         rankingsList = new JList<>();
         activeMatchesList = new JList<>();
         previousMatchesList = new JList<>();
+
+        attendenceScrollPane = new JScrollPane(attendenceList);
+        playerListScrollPane = new JScrollPane(playerList);
+        rankingsScrollPane = new JScrollPane(rankingsList);
+        activeMatchesScrollPane = new JScrollPane(activeMatchesList);
+        previousMatchesScrollPane = new JScrollPane(previousMatchesList);
 
         newArrivalButton = new JButton("New Arrival");
         returningArrivalButton = new JButton("Returning Arrival");
@@ -115,6 +134,7 @@ public class MainUI {
         basePanel           .setLayout(new BorderLayout());
         playersPanel        .setLayout(new BorderLayout());
         attendenceListPanel .setLayout(new BorderLayout());
+        playerListPanel     .setLayout(new BorderLayout());
         rankingsPanel       .setLayout(new BorderLayout());
         matchesPanel        .setLayout(new BorderLayout());
         activeMatchesPanel  .setLayout(new BorderLayout());
@@ -138,13 +158,19 @@ public class MainUI {
                 playersPanel.add(attendenceListPanel, W);
                 {
                     attendenceListPanel.add(attendenceListLabel, N);
-                    attendenceListPanel.add(attendenceList, C);
+                    attendenceListPanel.add(attendenceScrollPane, C);
+                }
+
+                playersPanel.add(playerListPanel, C);
+                {
+                    playerListPanel.add(playerListLabel, N);
+                    playerListPanel.add(playerListScrollPane, C);
                 }
 
                 playersPanel.add(rankingsPanel, E);
                 {
                     rankingsPanel.add(rankingsLabel, N);
-                    rankingsPanel.add(rankingsList, C);
+                    rankingsPanel.add(rankingsScrollPane, C);
                 }
             }
 
@@ -153,13 +179,13 @@ public class MainUI {
                 matchesPanel.add(activeMatchesPanel, W);
                 {
                     activeMatchesPanel.add(activeMatchesLabel, N);
-                    activeMatchesPanel.add(activeMatchesList, C);
+                    activeMatchesPanel.add(activeMatchesScrollPane,C);
                 }
 
                 matchesPanel.add(previousMatchesPanel, E);
                 {
                     previousMatchesPanel.add(previousMatchesLabel, N);
-                    previousMatchesPanel.add(previousMatchesList, C);
+                    previousMatchesPanel.add(previousMatchesScrollPane,C);
                 }
             }
 
@@ -209,7 +235,7 @@ public class MainUI {
         recordMatchButton.addActionListener(l);
         discardMatchButton.addActionListener(l);
         attendenceList.addListSelectionListener(l);
-        rankingsList.addListSelectionListener(l);
+        playerList.addListSelectionListener(l);
         activeMatchesList.addListSelectionListener(l);
         previousMatchesList.addListSelectionListener(l);
     }
@@ -228,13 +254,26 @@ public class MainUI {
         discardMatchButton.setName("MainUI.Button.discardMatch");
 
         attendenceList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+        playerList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
         rankingsList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
         activeMatchesList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
         previousMatchesList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
 
+        attendenceScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        playerListScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        rankingsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        activeMatchesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        previousMatchesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        attendenceScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        playerListScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        activeMatchesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        previousMatchesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        rankingsList.setEnabled(false);
+
         checkEnabledButtons();
 
-        window.setSize(720, 430);
+        window.setSize(1200, 500);
         window.setTitle("Title Placeholder");
         window.setMinimumSize(new Dimension(600,400));
         window.setLocationRelativeTo(null);
@@ -243,16 +282,19 @@ public class MainUI {
     }
 
     private void populatePlayers() {
-        ArrayList<Player> players =
+        ArrayList<Player> playersByName =
                 new ArrayList<>(Runner.getRunner().getAllPlayers());
-        players.sort(null);
-        rankingsList.setListData(players.toArray(new Player[0]));
+        playersByName.sort(new Player.PlayerNameComparator());
+        playerList.setListData(playersByName.toArray(new Player[0]));
+
+        rankingsList.setListData(
+                Runner.getRunner().getPlayerRankings().toArray(new String[0]));
     }
 
     private void populateAttendance() {
         ArrayList<Player> players =
                 new ArrayList<>(Runner.getRunner().getAttendance());
-        players.sort(null);
+        players.sort(new Player.PlayerNameComparator());
         attendenceList.setListData(players.toArray(new Player[0]));
     }
 
@@ -284,7 +326,7 @@ public class MainUI {
 
     private void checkEnableReturningPlayerButton() {
         returningArrivalButton.setEnabled(
-                rankingsList.getSelectedValue() != null);
+                playerList.getSelectedValue() != null);
     }
 
     private void checkEnableRetirePlayerButton() {
@@ -294,7 +336,7 @@ public class MainUI {
 
     private void checkEnableEditPlayerButton() {
         editPlayerButton.setEnabled(
-                rankingsList.getSelectedValue() != null);
+                playerList.getSelectedValue() != null);
     }
 
     private void checkEnableFindMatchButton() {
@@ -317,7 +359,7 @@ public class MainUI {
     }
 
     private void returningPlayer() {
-        Runner.getRunner().playerArrived(rankingsList.getSelectedValue());
+        Runner.getRunner().playerArrived(playerList.getSelectedValue());
         update();
     }
 
@@ -327,7 +369,7 @@ public class MainUI {
     }
 
     private void editPlayer() {
-        new PlayerEditor(this, rankingsList.getSelectedValue());
+        new PlayerEditor(this, playerList.getSelectedValue());
     }
 
     private void findMatch() {

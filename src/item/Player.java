@@ -1,5 +1,6 @@
 package item;
 
+import java.util.Comparator;
 import java.util.HashSet;
 
 public class Player implements Comparable<Player> {
@@ -122,5 +123,29 @@ public class Player implements Comparable<Player> {
         result += "END";
 
         return result;
+    }
+
+    /**
+     * Comparator for sorting players by name (first then last)
+     * @author Jason
+     */
+    public static class PlayerNameComparator implements Comparator<Player> {
+        @Override
+        public int compare(Player arg0, Player arg1) {
+            int first = arg0.name1.compareTo(arg1.name1);
+            return first != 0 ? first : arg0.name2.compareTo(arg1.name2);
+        }
+    }
+
+    /**
+     * Comparator for sorting players by rank
+     * @author Jason
+     */
+    public static class PlayerRankComparator implements Comparator<Player> {
+        @Override
+        public int compare(Player arg0, Player arg1) {
+            double diff = arg0.rating - arg1.rating;
+            return (int)(diff < 0 ? Math.floor(diff) : Math.ceil(diff));
+        }
     }
 }

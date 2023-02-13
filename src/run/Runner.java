@@ -78,6 +78,24 @@ public class Runner {
     }
 
     /**
+     * Builds an ArrayList of players in String format sorted by and displaying
+     * player rank
+     * @return an ArrayList of player names and ranks sorted by rank
+     */
+    public ArrayList<String> getPlayerRankings() {
+        ArrayList<Player> players =
+                new ArrayList<>(getAllPlayers());
+        players.sort(new Player.PlayerRankComparator());
+
+        ArrayList<String> result = new ArrayList<>();
+        for (int i=0; i < players.size(); i++) {
+            result.add("" + i + ": " + players.get(i).toString());
+        }
+
+        return result;
+    }
+
+    /**
      * Adds a new Player to the rankings
      * @param name - The name of the Player to add
      * @param eid - The eid of the Player to add
