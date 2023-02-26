@@ -45,7 +45,7 @@ public class MainUI {
     private JScrollPane activeMatchesScrollPane;
     private JScrollPane previousMatchesScrollPane;
 
-    private JLabel attendenceListLabel;
+    private JLabel attendanceListLabel;
     private JLabel playerListLabel;
     private JLabel rankingsLabel;
     private JLabel controlsLabel;
@@ -98,7 +98,7 @@ public class MainUI {
         playerControlPanel = new JPanel();
         matchControlPanel = new JPanel();
 
-        attendenceListLabel = new JLabel("Attendence List");
+        attendanceListLabel = new JLabel("Attendance List");
         playerListLabel = new JLabel("Players");
         rankingsLabel = new JLabel("Rankings");
         controlsLabel = new JLabel("Controls");
@@ -157,7 +157,7 @@ public class MainUI {
             {
                 playersPanel.add(attendenceListPanel, W);
                 {
-                    attendenceListPanel.add(attendenceListLabel, N);
+                    attendenceListPanel.add(attendanceListLabel, N);
                     attendenceListPanel.add(attendenceScrollPane, C);
                 }
 

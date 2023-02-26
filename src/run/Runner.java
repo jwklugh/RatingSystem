@@ -18,7 +18,7 @@ import item.Player;
 public class Runner {
 
     private static Runner theRunner;
-    private HashSet<Player> attendence;
+    private HashSet<Player> attendance;
     private HashMap<String, Player> players;
     private HashMap<Long, Match> matches;
 
@@ -33,7 +33,7 @@ public class Runner {
     private void populateRunner() {
         players =  PlayerIO.loadAllPlayers();
         matches = MatchIO.loadAllMatches();
-        attendence = new HashSet<>();
+        attendance = new HashSet<>();
         populatePlayerMatches();
     }
 
@@ -116,7 +116,7 @@ public class Runner {
      * @return All players currently in attendance
      */
     public Collection<Player> getAttendance() {
-        Collection<Player> attendingPlayers = new HashSet<Player>(attendence);
+        Collection<Player> attendingPlayers = new HashSet<Player>(attendance);
         return attendingPlayers;
     }
 
@@ -179,7 +179,7 @@ public class Runner {
      * @return If the player was added to the list
      */
     public boolean playerArrived(Player p) {
-        return attendence.add(p);
+        return attendance.add(p);
     }
 
     /**
@@ -188,7 +188,7 @@ public class Runner {
      * @return If the player was successfully retired
      */
     public boolean retirePlayer(Player p) {
-        return attendence.remove(p);
+        return attendance.remove(p);
     }
 
     /**
@@ -197,8 +197,8 @@ public class Runner {
      * @return If the player was successfully deleted
      */
     public boolean deletePlayer(Player p) {
-        if(attendence.contains(p))
-            if(!attendence.remove(p))
+        if(attendance.contains(p))
+            if(!attendance.remove(p))
                 return false;
 
         return players.remove(p.getEid(), p);
@@ -234,7 +234,7 @@ public class Runner {
      * @return A random player in attendance
      */
     public Player matchPlayer(Player p) {
-        HashSet<Player> candidates = new HashSet<>(attendence);
+        HashSet<Player> candidates = new HashSet<>(attendance);
 
         candidates.remove(p);
         for (Match m : getCurrMatches()) {
