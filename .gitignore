@@ -1,7 +1,3 @@
-
-bin/item/Match.class
 *.class
 *.player
 *.match
-*.class
-*.class
