@@ -303,7 +303,7 @@ public class MainUI {
                 new ArrayList<Match>(Runner.getRunner().getPastMatches());
         ArrayList<Match> curr =
                 new ArrayList<Match>(Runner.getRunner().getCurrMatches());
-        past.sort(null);
+        past.sort(new Match.InverseMatchComparator());
         curr.sort(null);
         previousMatchesList.setListData(past.toArray(new Match[0]));
         activeMatchesList.setListData(curr.toArray(new Match[0]));

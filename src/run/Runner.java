@@ -314,11 +314,11 @@ public class Runner {
         expectedScore = 1 / (1 + Math.pow(10, (Rat2 - Rat1)/400));
 
         if(match.getStatus() == 1) {
-            match.player1().adjustRating(Rat1 + k * (1 - expectedScore));
-            match.player2().adjustRating(Rat2 - k * (1 - expectedScore));
+            match.player1().adjustRating(+ k * (1 - expectedScore));
+            match.player2().adjustRating(- k * (1 - expectedScore));
         } else if (match.getStatus() == 2) {
-            match.player1().setRating(Rat1 - k * expectedScore);
-            match.player2().setRating(Rat2 + k * expectedScore);
+            match.player1().adjustRating(- k * expectedScore);
+            match.player2().adjustRating(+ k * expectedScore);
         }
 
         MatchIO.saveMatch(match);
@@ -328,7 +328,8 @@ public class Runner {
 
     public boolean discardMatch(Match match) {
         if (match.getStatus() == 0) {
-            return matches.remove(match.id(), match);
+            return matches.remove(match.id(), match)
+                    && MatchIO.deleteMatch(match);
         }
 
         // TODO work out how to retroactively remove a match and adjust ratings

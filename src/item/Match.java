@@ -1,5 +1,6 @@
 package item;
 
+import java.util.Comparator;
 import java.util.Date;
 
 import run.Runner;
@@ -135,5 +136,16 @@ public class Match implements Comparable<Match> {
                 + timestamp.getTime() + ""
                 + p1.getEid()
                 + p2.getEid()).hashCode();
+    }
+
+    /**
+     * Comparator for sorting Matches newest first
+     * @author Jason
+     */
+    public static class InverseMatchComparator implements Comparator<Match> {
+        @Override
+        public int compare(Match arg0, Match arg1) {
+            return -arg0.compareTo(arg1);
+        }
     }
 }

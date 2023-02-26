@@ -90,4 +90,14 @@ public class MatchIO {
 
         return new Match(info[1], info[2], info[3], info[4]);
     }
+
+    /**
+     * Deletes the file for the given match
+     * @param match - The match to delete the file of
+     * @return If the file was successfully deleted
+     */
+    public static boolean deleteMatch(Match match) {
+        File matchFile = new File("matches/" + match.id() + ".match");
+        return matchFile.delete();
+    }
 }

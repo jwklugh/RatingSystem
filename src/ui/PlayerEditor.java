@@ -204,7 +204,7 @@ public class PlayerEditor {
      */
     private void confirmButtonPressed() {
         Runner.getRunner().editPlayer(player, nameField.getText(),
-                eidField.getText(), player.getRating());
+                eidField.getText(), (double)ratingSpinner.getValue());
 
         window.dispatchEvent(
                 new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
