@@ -48,7 +48,6 @@ public class MainUI {
     private JLabel attendanceListLabel;
     private JLabel playerListLabel;
     private JLabel rankingsLabel;
-    private JLabel controlsLabel;
     private JLabel activeMatchesLabel;
     private JLabel previousMatchesLabel;
 
@@ -101,7 +100,6 @@ public class MainUI {
         attendanceListLabel = new JLabel("Attendance List");
         playerListLabel = new JLabel("Players");
         rankingsLabel = new JLabel("Rankings");
-        controlsLabel = new JLabel("Controls");
         activeMatchesLabel = new JLabel("Active Matches");
         previousMatchesLabel = new JLabel("Previous Matches");
 

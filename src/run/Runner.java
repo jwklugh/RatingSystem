@@ -328,8 +328,8 @@ public class Runner {
 
     public boolean discardMatch(Match match) {
         if (match.getStatus() == 0) {
-            return matches.remove(match.id(), match)
-                    && MatchIO.deleteMatch(match);
+            MatchIO.deleteMatch(match);
+            return matches.remove(match.id(), match);
         }
 
         // TODO work out how to retroactively remove a match and adjust ratings

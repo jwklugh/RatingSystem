@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 
 import item.Match;
@@ -96,8 +97,20 @@ public class MatchIO {
      * @param match - The match to delete the file of
      * @return If the file was successfully deleted
      */
-    public static boolean deleteMatch(Match match) {
+    public static void deleteMatch(Match match) {
         File matchFile = new File("matches/" + match.id() + ".match");
-        return matchFile.delete();
+        File archiveDir = new File("archive/");
+
+        if(!archiveDir.exists()) {
+            archiveDir.mkdir();
+        }
+
+        archiveDir = new File("archive/" + match.id() + ".match");
+
+        try {
+            Files.move(matchFile.toPath(), archiveDir.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -65,12 +65,11 @@ public class MatchRecorder {
         basePanel.setLayout(new BorderLayout());
         buttonPanel.setLayout(new BorderLayout());
 
-        @SuppressWarnings("unused")
         String N = BorderLayout.NORTH,
-        S = BorderLayout.SOUTH,
-        E = BorderLayout.EAST,
-        W = BorderLayout.WEST,
-        C = BorderLayout.CENTER;
+                S = BorderLayout.SOUTH,
+                E = BorderLayout.EAST,
+                W = BorderLayout.WEST,
+                C = BorderLayout.CENTER;
 
         window.setContentPane(basePanel);
         {
