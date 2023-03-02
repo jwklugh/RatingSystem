@@ -30,6 +30,7 @@ public class PlayerEditor {
     private JFrame window;
     private JPanel basePanel;
     private JPanel fieldPanel;
+    private JPanel field2Panel;
     private JPanel idFieldPanel;     ///
     private JPanel namePanel;
     private JPanel eidPanel;
@@ -40,6 +41,7 @@ public class PlayerEditor {
     private JLabel eidLabel;
     private JLabel ratingLabel;      ///
     private JLabel showRatingLabel;  ///
+    private JLabel matchesPlayedLabel;
     private JTextField nameField;
     private JTextField eidField;
     private JSpinner ratingSpinner;  ///
@@ -63,6 +65,7 @@ public class PlayerEditor {
         window = new JFrame();
         basePanel = new JPanel();
         fieldPanel = new JPanel();
+        field2Panel = new JPanel();
         idFieldPanel = new JPanel();
         namePanel = new JPanel();
         eidPanel = new JPanel();
@@ -73,6 +76,8 @@ public class PlayerEditor {
         eidLabel = new JLabel(" EID:  ");
         ratingLabel = new JLabel(" Rating:  ");
         showRatingLabel = new JLabel(" show");
+        matchesPlayedLabel = new JLabel(" Matches Played: " +
+                player.getNumMatchesPlayed());
         nameField = new JTextField(player.toString(), 15);
         eidField = new JTextField(player.getEid(), 15);
         ratingSpinner = new JSpinner(
@@ -88,6 +93,7 @@ public class PlayerEditor {
     private void createLayout() {
         basePanel.setLayout(new BorderLayout());
         fieldPanel.setLayout(new BorderLayout());
+        field2Panel.setLayout(new BorderLayout());
         idFieldPanel.setLayout(new BorderLayout());
         namePanel.setLayout(new BorderLayout());
         eidPanel.setLayout(new BorderLayout());
@@ -121,16 +127,21 @@ public class PlayerEditor {
                 }
 
 
-                fieldPanel.add(ratingPanel, S);
+                fieldPanel.add(field2Panel, S);
                 {
-                    ratingPanel.add(ratingLabel, W);
-                    ratingPanel.add(ratingSpinner, C);
-
-                    ratingPanel.add(showRatingPanel, E);
+                    field2Panel.add(ratingPanel, N);
                     {
-                        showRatingPanel.add(showRatingCB, W);
-                        showRatingPanel.add(showRatingLabel, E);
+                        ratingPanel.add(ratingLabel, W);
+                        ratingPanel.add(ratingSpinner, C);
+
+                        ratingPanel.add(showRatingPanel, E);
+                        {
+                            showRatingPanel.add(showRatingCB, W);
+                            showRatingPanel.add(showRatingLabel, E);
+                        }
                     }
+
+                    field2Panel.add(matchesPlayedLabel, S);
                 }
             }
 

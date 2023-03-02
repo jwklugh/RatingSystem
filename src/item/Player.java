@@ -57,11 +57,19 @@ public class Player implements Comparable<Player> {
     }
 
     /**
-     * 
-     * @param match
+     * Adds the given Match the this Players list of matches
+     * @param match - The Match to add
      */
     public void addMatch(Match match) {
         matches.add(match);
+    }
+
+    /**
+     * Gets the number of Matches this Player has played
+     * @return The number of matches this player has played
+     */
+    public int getNumMatchesPlayed() {
+        return matches.size();
     }
 
     /**

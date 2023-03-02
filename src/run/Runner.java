@@ -83,16 +83,26 @@ public class Runner {
      * @return an ArrayList of player names and ranks sorted by rank
      */
     public ArrayList<String> getPlayerRankings() {
-        ArrayList<Player> players =
-                new ArrayList<>(getAllPlayers());
+        ArrayList<Player> players = new ArrayList<>(getAllPlayers());
         players.sort(new Player.PlayerRankComparator());
 
         ArrayList<String> result = new ArrayList<>();
         for (int i=0; i < players.size(); i++) {
-            result.add("" + i + ": " + players.get(i).toString());
+            result.add("" + (i + 1) + ": " + players.get(i).toString());
         }
 
         return result;
+    }
+
+    /**
+     * Gets the rank of a player relative to all players
+     * @param player - The player to get the rank of
+     * @return The rank of the given player
+     */
+    public int getPlayerRank(Player player) {
+        ArrayList<Player> players = new ArrayList<>(getAllPlayers());
+        players.sort(new Player.PlayerRankComparator());
+        return players.indexOf(player) + 1;
     }
 
     /**

@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -8,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -53,7 +55,7 @@ public class MainUI {
 
     private JList<Player> attendenceList;
     private JList<Player> playerList;
-    private JList<String> rankingsList;
+    private JList<Player> rankingsList;
     private JList<Match> activeMatchesList;
     private JList<Match> previousMatchesList;
 
@@ -267,7 +269,9 @@ public class MainUI {
         activeMatchesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         previousMatchesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        rankingsList.setEnabled(false);
+        attendenceList.setCellRenderer(new PlayerCellRenderer());
+        playerList.setCellRenderer(new PlayerCellRenderer());
+        rankingsList.setCellRenderer(new RankingsCellRenderer());
 
         checkEnabledButtons();
 
@@ -285,8 +289,10 @@ public class MainUI {
         playersByName.sort(new Player.PlayerNameComparator());
         playerList.setListData(playersByName.toArray(new Player[0]));
 
-        rankingsList.setListData(
-                Runner.getRunner().getPlayerRankings().toArray(new String[0]));
+        ArrayList<Player> playersByRank =
+                new ArrayList<>(Runner.getRunner().getAllPlayers());
+        playersByRank.sort(new Player.PlayerRankComparator());
+        rankingsList.setListData(playersByRank.toArray(new Player[0]));
     }
 
     private void populateAttendance() {
@@ -446,6 +452,63 @@ public class MainUI {
         public void valueChanged(ListSelectionEvent e) {
             checkEnabledButtons();
         }
+    }
+}
+
+class RankingsCellRenderer extends DefaultListCellRenderer {
+
+    private static final long serialVersionUID = 1L;
+
+    public RankingsCellRenderer() {
+        setOpaque(true);
+    }
+
+    @Override public Component getListCellRendererComponent(JList<?> list,
+            Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        Player player = (Player) value;
+
+        value = "" + Runner.getRunner().getPlayerRank(player)
+                + ": " + player.toString();
+
+        Color background = Color.WHITE;
+        Color foreground = player.getNumMatchesPlayed() >= 5 ?
+                Color.BLACK : Color.MAGENTA;
+
+        Component c = super.getListCellRendererComponent(list, value, index,
+                isSelected, cellHasFocus);
+
+        c.setForeground(foreground);
+        c.setBackground(background);
+
+        return c;
+    }
+}
+
+class PlayerCellRenderer extends DefaultListCellRenderer {
+
+    private static final long serialVersionUID = 1L;
+
+    public PlayerCellRenderer() {
+        setOpaque(true);
+    }
+
+    @Override public Component getListCellRendererComponent(JList<?> list,
+            Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        Player player = (Player) value;
+
+        value = player.toString();
+
+        Color background = Color.WHITE;
+        Color foreground = player.getNumMatchesPlayed() >= 5 ?
+                Color.BLACK : Color.MAGENTA;
+
+        Component c = super.getListCellRendererComponent(list, value, index,
+                isSelected, cellHasFocus);
+
+        c.setForeground(foreground);
+        c.setBackground(background);
+
+        return c;
     }
 }
 
