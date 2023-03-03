@@ -31,7 +31,7 @@ public class MainUI {
 
     private JPanel basePanel;
     private JPanel playersPanel;
-    private JPanel attendenceListPanel;
+    private JPanel attendanceListPanel;
     private JPanel playerListPanel;
     private JPanel rankingsPanel;
     private JPanel matchesPanel;
@@ -41,7 +41,7 @@ public class MainUI {
     private JPanel playerControlPanel;
     private JPanel matchControlPanel;
 
-    private JScrollPane attendenceScrollPane;
+    private JScrollPane attendanceScrollPane;
     private JScrollPane playerListScrollPane;
     private JScrollPane rankingsScrollPane;
     private JScrollPane activeMatchesScrollPane;
@@ -53,7 +53,7 @@ public class MainUI {
     private JLabel activeMatchesLabel;
     private JLabel previousMatchesLabel;
 
-    private JList<Player> attendenceList;
+    private JList<Player> attendanceList;
     private JList<Player> playerList;
     private JList<Player> rankingsList;
     private JList<Match> activeMatchesList;
@@ -67,6 +67,9 @@ public class MainUI {
     private JButton createMatchButton;
     private JButton recordMatchButton;
     private JButton discardMatchButton;
+
+    private static final Player dummy =
+            new Player("---------- ----------", "", 0, false);
 
     private MainUIListener l;
 
@@ -89,7 +92,7 @@ public class MainUI {
 
         basePanel = new JPanel();
         playersPanel = new JPanel();
-        attendenceListPanel = new JPanel();
+        attendanceListPanel = new JPanel();
         playerListPanel = new JPanel();
         rankingsPanel = new JPanel();
         matchesPanel = new JPanel();
@@ -105,13 +108,13 @@ public class MainUI {
         activeMatchesLabel = new JLabel("Active Matches");
         previousMatchesLabel = new JLabel("Previous Matches");
 
-        attendenceList = new JList<>();
+        attendanceList = new JList<>();
         playerList = new JList<>();
         rankingsList = new JList<>();
         activeMatchesList = new JList<>();
         previousMatchesList = new JList<>();
 
-        attendenceScrollPane = new JScrollPane(attendenceList);
+        attendanceScrollPane = new JScrollPane(attendanceList);
         playerListScrollPane = new JScrollPane(playerList);
         rankingsScrollPane = new JScrollPane(rankingsList);
         activeMatchesScrollPane = new JScrollPane(activeMatchesList);
@@ -133,7 +136,7 @@ public class MainUI {
     private void createLayout() {
         basePanel           .setLayout(new BorderLayout());
         playersPanel        .setLayout(new BorderLayout());
-        attendenceListPanel .setLayout(new BorderLayout());
+        attendanceListPanel .setLayout(new BorderLayout());
         playerListPanel     .setLayout(new BorderLayout());
         rankingsPanel       .setLayout(new BorderLayout());
         matchesPanel        .setLayout(new BorderLayout());
@@ -155,10 +158,10 @@ public class MainUI {
         {
             basePanel.add(playersPanel, W);
             {
-                playersPanel.add(attendenceListPanel, W);
+                playersPanel.add(attendanceListPanel, W);
                 {
-                    attendenceListPanel.add(attendanceListLabel, N);
-                    attendenceListPanel.add(attendenceScrollPane, C);
+                    attendanceListPanel.add(attendanceListLabel, N);
+                    attendanceListPanel.add(attendanceScrollPane, C);
                 }
 
                 playersPanel.add(playerListPanel, C);
@@ -234,7 +237,7 @@ public class MainUI {
         createMatchButton.addActionListener(l);
         recordMatchButton.addActionListener(l);
         discardMatchButton.addActionListener(l);
-        attendenceList.addListSelectionListener(l);
+        attendanceList.addListSelectionListener(l);
         playerList.addListSelectionListener(l);
         activeMatchesList.addListSelectionListener(l);
         previousMatchesList.addListSelectionListener(l);
@@ -253,23 +256,23 @@ public class MainUI {
         recordMatchButton.setName("MainUI.Button.recordMatch");
         discardMatchButton.setName("MainUI.Button.discardMatch");
 
-        attendenceList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+        attendanceList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
         playerList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
         rankingsList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
         activeMatchesList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
         previousMatchesList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
 
-        attendenceScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        attendanceScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         playerListScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         rankingsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         activeMatchesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         previousMatchesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        attendenceScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        attendanceScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         playerListScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         activeMatchesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         previousMatchesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        attendenceList.setCellRenderer(new PlayerCellRenderer());
+        attendanceList.setCellRenderer(new PlayerCellRenderer());
         playerList.setCellRenderer(new PlayerCellRenderer());
         rankingsList.setCellRenderer(new RankingsCellRenderer());
 
@@ -287,19 +290,28 @@ public class MainUI {
         ArrayList<Player> playersByName =
                 new ArrayList<>(Runner.getRunner().getAllPlayers());
         playersByName.sort(new Player.PlayerNameComparator());
+        if(playersByName.isEmpty()) {
+            playersByName.add(dummy);
+        }
         playerList.setListData(playersByName.toArray(new Player[0]));
 
         ArrayList<Player> playersByRank =
                 new ArrayList<>(Runner.getRunner().getAllPlayers());
         playersByRank.sort(new Player.PlayerRankComparator());
+        if(playersByRank.isEmpty()) {
+            playersByRank.add(dummy);
+        }
         rankingsList.setListData(playersByRank.toArray(new Player[0]));
     }
 
     private void populateAttendance() {
         ArrayList<Player> players =
                 new ArrayList<>(Runner.getRunner().getAttendance());
+        if(players.isEmpty()) {
+            players.add(dummy);
+        }
         players.sort(new Player.PlayerMatchComparator());
-        attendenceList.setListData(players.toArray(new Player[0]));
+        attendanceList.setListData(players.toArray(new Player[0]));
     }
 
     private void populateMatches() {
@@ -330,21 +342,24 @@ public class MainUI {
 
     private void checkEnableReturningPlayerButton() {
         returningArrivalButton.setEnabled(
-                playerList.getSelectedValue() != null);
+                playerList.getSelectedValue() != null &&
+                !playerList.getSelectedValue().equals(dummy));
     }
 
     private void checkEnableRetirePlayerButton() {
         retirePlayerButton.setEnabled(
-                attendenceList.getSelectedValue() != null);
+                attendanceList.getSelectedValue() != null &&
+                !attendanceList.getSelectedValue().equals(dummy));
     }
 
     private void checkEnableEditPlayerButton() {
         editPlayerButton.setEnabled(
-                playerList.getSelectedValue() != null);
+                playerList.getSelectedValue() != null &&
+                !playerList.getSelectedValue().equals(dummy));
     }
 
     private void checkEnableFindMatchButton() {
-        findMatchButton.setEnabled(attendenceList.getSelectedValue() != null &&
+        findMatchButton.setEnabled(attendanceList.getSelectedValue() != null &&
                 Runner.getRunner().getAttendance().size() > 1);
     }
 
@@ -368,7 +383,7 @@ public class MainUI {
     }
 
     private void retiringPlayer() {
-        Runner.getRunner().retirePlayer(attendenceList.getSelectedValue());
+        Runner.getRunner().retirePlayer(attendanceList.getSelectedValue());
         update();
     }
 
@@ -377,7 +392,7 @@ public class MainUI {
     }
 
     private void findMatch() {
-        Player findMatchFor = attendenceList.getSelectedValue();
+        Player findMatchFor = attendanceList.getSelectedValue();
         Player matchedPlayer = Runner.getRunner().matchPlayer(findMatchFor);
         Runner.getRunner().createMatch(findMatchFor, matchedPlayer);
     }
