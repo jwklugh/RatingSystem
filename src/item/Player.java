@@ -1,5 +1,6 @@
 package item;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 
@@ -10,8 +11,9 @@ public class Player implements Comparable<Player> {
     private String eid;
     private HashSet<Match> matches;
     private double rating;
+    private boolean confirmed;
 
-    public Player(String name, String studentID, double rate) {
+    public Player(String name, String studentID, double rate, boolean conf) {
         String[] names = name.split(" ");
         if (names.length > 1)
             name2 = names[1];
@@ -19,25 +21,28 @@ public class Player implements Comparable<Player> {
         eid = studentID;
         rating = rate;
         matches = new HashSet<>();
+        confirmed = conf;
     }
 
     public Player(String firstname, String lastname, String studentID,
-            double rate) {
+            double rate, boolean conf) {
         name1 = firstname;
         name2 = lastname;
         eid = studentID;
 
         rating = rate;
         matches = new HashSet<>();
+        confirmed = conf;
     }
 
-    public void edit(String name, String studentID, double rate) {
+    public void edit(String name, String studentID, double rate, boolean conf) {
         String[] names = name.split(" ");
         if (names.length > 1)
             name2 = names[1];
         name1 = names[0];
         eid = studentID;
         rating = rate;
+        confirmed = conf;
     }
 
     public String firstname() {
@@ -54,6 +59,10 @@ public class Player implements Comparable<Player> {
 
     public double getRating() {
         return rating;
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
     }
 
     /**
@@ -80,8 +89,20 @@ public class Player implements Comparable<Player> {
         rating += change;
     }
 
+    /**
+     * Sets the Player's rating directly to a new value
+     * @param newRating - The rating to change to
+     */
     public void setRating(double newRating) {
         rating = newRating;
+    }
+
+    /**
+     * Sets the Player's confirmed value
+     * @param conf - The value to set to
+     */
+    public void setConfirmed(boolean conf) {
+        confirmed = conf;
     }
 
     /**
@@ -121,7 +142,8 @@ public class Player implements Comparable<Player> {
                 + eid + "\n"
                 + name1 + "\n"
                 + name2 + "\n"
-                + rating + "\n";
+                + rating + "\n"
+                + confirmed + "\n";
 
         // Note: Matches are stored on a player's file,
         // but aren't relevant for loading
@@ -152,8 +174,41 @@ public class Player implements Comparable<Player> {
     public static class PlayerRankComparator implements Comparator<Player> {
         @Override
         public int compare(Player arg0, Player arg1) {
-            double diff = arg0.rating - arg1.rating;
+            double diff = arg1.rating - arg0.rating;
             return (int)(diff < 0 ? Math.floor(diff) : Math.ceil(diff));
+        }
+    }
+
+    /**
+     * Comparator for sorting players by last match played (oldest first)
+     * @author Jason
+     */
+    public static class PlayerMatchComparator implements Comparator<Player> {
+        @Override
+        public int compare(Player arg0, Player arg1) {
+
+            if(arg0.matches.size() == 0 && arg1.matches.size() == 0)
+                return 0;
+
+            if(arg0.matches.size() == 0)
+                return -1;
+
+            if(arg1.matches.size() == 0)
+                return 1;
+
+            Match match0;
+            Match match1;
+            ArrayList<Match> matches;
+
+            matches = new ArrayList<>(arg0.matches);
+            matches.sort(new Match.InverseMatchComparator());
+            match0 = matches.get(0);
+
+            matches = new ArrayList<>(arg1.matches);
+            matches.sort(new Match.InverseMatchComparator());
+            match1 = matches.get(0);
+
+            return match0.compareTo(match1);
         }
     }
 }

@@ -119,12 +119,13 @@ public class PlayerIO {
         }
         catch (IOException e) { e.printStackTrace(); }
 
-        if(info.size() < 4)
+        if(info.size() < 5)
             throw new FileNotFoundException(
                     "The given Player file is incomplete: "
                             + playerFile.getAbsolutePath());
 
         return new Player(info.get(1), info.get(2), info.get(0),
-                Double.parseDouble(info.get(3)));
+                Double.parseDouble(info.get(3)),
+                Boolean.parseBoolean(info.get(4)));
     }
 }

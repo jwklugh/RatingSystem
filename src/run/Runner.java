@@ -113,7 +113,7 @@ public class Runner {
      */
     public Player AddPlayer(String name, String eid) {
         Util.debug("Adding Player: " + name + " - " + eid);
-        Player newPlayer = new Player(name, eid, 800);
+        Player newPlayer = new Player(name, eid, 800, false);
         PlayerIO.savePlayer(newPlayer);
         players.put(newPlayer.getEid(), newPlayer);
         RatingSystemMain.ui.update();
@@ -222,9 +222,10 @@ public class Runner {
      * @param eid - The eid to edit to
      * @param rate - The rating to give the Player
      */
-    public void editPlayer(Player p, String name, String eid, double rate) {
+    public void editPlayer(Player p, String name, String eid, double rate,
+            boolean confirmed) {
 
-        p.edit(name, eid, rate);
+        p.edit(name, eid, rate, confirmed);
         PlayerIO.savePlayer(p);
         RatingSystemMain.ui.update();
 
@@ -330,6 +331,9 @@ public class Runner {
             match.player1().adjustRating(- k * expectedScore);
             match.player2().adjustRating(+ k * expectedScore);
         }
+
+        match.player1().addMatch(match);
+        match.player2().addMatch(match);
 
         MatchIO.saveMatch(match);
         PlayerIO.savePlayer(match.player1());

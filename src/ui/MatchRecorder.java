@@ -35,7 +35,7 @@ public class MatchRecorder {
 
     private Match match;
     private static final Player makeSelectionPlayer =
-            new Player("<Select Player>", "", 0);
+            new Player("<Select Player>", "", 0, false);
 
     /**
      * 

@@ -116,10 +116,15 @@ public class Match implements Comparable<Match> {
     @Override
     public String toString() {
         return "<html>"
+                + (status == 1 ? "<font color='green'>" : "")
                 + p1.toString()
+                + (status == 1 ? "</font>" : "")
                 + "<br>" + "vs"
+                + (status == 2 ? "<font color='green'>" : "")
                 + "<br>" + p2.toString()
-                + "<br>" + timestamp.toString();
+                + (status == 2 ? "</font>" : "")
+                + "<br>" + timestamp.toString()
+                + "<br>---";
     }
 
     public String dataString() {

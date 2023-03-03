@@ -31,23 +31,27 @@ public class PlayerEditor {
     private JPanel basePanel;
     private JPanel fieldPanel;
     private JPanel field2Panel;
-    private JPanel idFieldPanel;     ///
+    private JPanel idFieldPanel;       ///
     private JPanel namePanel;
     private JPanel eidPanel;
-    private JPanel ratingPanel;      ///
-    private JPanel showRatingPanel;  ///
+    private JPanel ratingPanel;        ///
+    private JPanel showRatingPanel;    ///
+    private JPanel matchesPlayedPanel;
+    private JPanel confirmedPanel;
     private JPanel buttonPanel;
     private JLabel nameLabel;
     private JLabel eidLabel;
-    private JLabel ratingLabel;      ///
-    private JLabel showRatingLabel;  ///
+    private JLabel ratingLabel;        ///
+    private JLabel showRatingLabel;    ///
     private JLabel matchesPlayedLabel;
+    private JLabel confirmedLabel;
     private JTextField nameField;
     private JTextField eidField;
-    private JSpinner ratingSpinner;  ///
+    private JSpinner ratingSpinner;    ///
     private JButton confirmButton;
     private JButton cancelButton;
-    private JCheckBox showRatingCB;  ///
+    private JCheckBox showRatingCB;    ///
+    private JCheckBox confirmedCB;
     private EditPlayerListener l;
 
     private Player player;
@@ -72,17 +76,21 @@ public class PlayerEditor {
         ratingPanel = new JPanel();
         showRatingPanel = new JPanel();
         buttonPanel = new JPanel();
+        matchesPlayedPanel = new JPanel();
+        confirmedPanel = new JPanel();
         nameLabel = new JLabel(" Name:  ");
         eidLabel = new JLabel(" EID:  ");
         ratingLabel = new JLabel(" Rating:  ");
         showRatingLabel = new JLabel(" show");
         matchesPlayedLabel = new JLabel(" Matches Played: " +
                 player.getNumMatchesPlayed());
+        confirmedLabel = new JLabel("Confirmed?  ");
         nameField = new JTextField(player.toString(), 15);
         eidField = new JTextField(player.getEid(), 15);
         ratingSpinner = new JSpinner(
                 new SpinnerNumberModel(player.getRating(), 0, 1000000, 1));
         showRatingCB = new JCheckBox();
+        confirmedCB = new JCheckBox();
         confirmButton = new JButton("Confirm");
         cancelButton = new JButton("Cancel");
     }
@@ -94,6 +102,8 @@ public class PlayerEditor {
         basePanel.setLayout(new BorderLayout());
         fieldPanel.setLayout(new BorderLayout());
         field2Panel.setLayout(new BorderLayout());
+        matchesPlayedPanel.setLayout(new BorderLayout());
+        confirmedPanel.setLayout(new BorderLayout());
         idFieldPanel.setLayout(new BorderLayout());
         namePanel.setLayout(new BorderLayout());
         eidPanel.setLayout(new BorderLayout());
@@ -141,7 +151,15 @@ public class PlayerEditor {
                         }
                     }
 
-                    field2Panel.add(matchesPlayedLabel, S);
+                    field2Panel.add(matchesPlayedPanel, S);
+                    {
+                        matchesPlayedPanel.add(matchesPlayedLabel, W);
+                        matchesPlayedPanel.add(confirmedPanel, E);
+                        {
+                            confirmedPanel.add(confirmedLabel, W);
+                            confirmedPanel.add(confirmedCB, E);
+                        }
+                    }
                 }
             }
 
@@ -163,6 +181,7 @@ public class PlayerEditor {
         ratingSpinner.addChangeListener(l);
         confirmButton.addActionListener(l);
         cancelButton.addActionListener(l);
+        confirmedCB.addActionListener(l);
         window.addWindowListener(l);
     }
 
@@ -172,7 +191,9 @@ public class PlayerEditor {
     private void createSettings() {
         confirmButton.setName("PlayerEditor.Button.Confirm");
         cancelButton.setName("PlayerEditor.Button.Cancel");
+        confirmedCB.setName("PlayerEditor.Checkbox.Confirmed");
         nameField.getDocument().addDocumentListener(l);
+        confirmedCB.setSelected(player.isConfirmed());
 
         window.setSize(450, 400);
         window.setTitle("Add Player");
@@ -197,7 +218,8 @@ public class PlayerEditor {
         boolean changeMade =
                 !nameField.getText().equals(player.toString()) ||
                 !eidField.getText().equals(player.getEid()) ||
-                !ratingSpinner.getValue().equals(player.getRating());
+                !ratingSpinner.getValue().equals(player.getRating()) ||
+                !(confirmedCB.isSelected() == player.isConfirmed());
 
         if (nameValid) {
             String eid = eidField.getText();
@@ -214,7 +236,8 @@ public class PlayerEditor {
      */
     private void confirmButtonPressed() {
         Runner.getRunner().editPlayer(player, nameField.getText(),
-                eidField.getText(), (double)ratingSpinner.getValue());
+                eidField.getText(), (double)ratingSpinner.getValue(),
+                confirmedCB.isSelected());
 
         window.dispatchEvent(
                 new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
@@ -250,6 +273,9 @@ public class PlayerEditor {
                         break;
                     case "PlayerEditor.Button.Cancel" :
                         cancelButtonPressed();
+                        break;
+                    case "PlayerEditor.Checkbox.Confirmed" :
+                        updateConfirmButtonEnabled();
                         break;
                 }
             } catch (Exception e1) {

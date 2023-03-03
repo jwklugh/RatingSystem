@@ -298,7 +298,7 @@ public class MainUI {
     private void populateAttendance() {
         ArrayList<Player> players =
                 new ArrayList<>(Runner.getRunner().getAttendance());
-        players.sort(new Player.PlayerNameComparator());
+        players.sort(new Player.PlayerMatchComparator());
         attendenceList.setListData(players.toArray(new Player[0]));
     }
 
@@ -471,8 +471,10 @@ class RankingsCellRenderer extends DefaultListCellRenderer {
                 + ": " + player.toString();
 
         Color background = Color.WHITE;
-        Color foreground = player.getNumMatchesPlayed() >= 5 ?
-                Color.BLACK : Color.MAGENTA;
+        Color foreground =
+                player.getNumMatchesPlayed() < 5 ? Color.MAGENTA :
+                    !player.isConfirmed() ? Color.GREEN :
+                        Color.BLACK;
 
         Component c = super.getListCellRendererComponent(list, value, index,
                 isSelected, cellHasFocus);
@@ -499,8 +501,10 @@ class PlayerCellRenderer extends DefaultListCellRenderer {
         value = player.toString();
 
         Color background = Color.WHITE;
-        Color foreground = player.getNumMatchesPlayed() >= 5 ?
-                Color.BLACK : Color.MAGENTA;
+        Color foreground =
+                player.getNumMatchesPlayed() < 5 ? Color.MAGENTA :
+                    !player.isConfirmed() ? Color.GREEN :
+                        Color.BLACK;
 
         Component c = super.getListCellRendererComponent(list, value, index,
                 isSelected, cellHasFocus);
