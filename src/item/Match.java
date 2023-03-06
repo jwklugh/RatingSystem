@@ -75,6 +75,21 @@ public class Match implements Comparable<Match> {
      */
     public void setResult(boolean player1Won) {
         status = player1Won ? 1 : 2;
+        timestamp = new Date();
+    }
+
+    /**
+     * Reverts this match's status to unplayed if a winner was decided
+     * @return True if the match was reverted, false if it was unplayed
+     */
+    public boolean revertResult() {
+        if (status != 0) {
+            status = 0;
+            timestamp = new Date();
+            return true;
+        }
+
+        return false;
     }
 
     /**

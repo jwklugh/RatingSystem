@@ -74,6 +74,15 @@ public class Player implements Comparable<Player> {
     }
 
     /**
+     * Removes the given Match the this Players list of matches
+     * @param match - The Match to remove
+     * @return If the match was successfully removed
+     */
+    public boolean removeMatch(Match match) {
+        return matches.remove(match);
+    }
+
+    /**
      * Gets the number of Matches this Player has played
      * @return The number of matches this player has played
      */

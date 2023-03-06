@@ -1,3 +1,5 @@
 *.class
 *.player
 *.match
+/bin/
+*Data.zip

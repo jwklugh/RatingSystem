@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
@@ -15,11 +16,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import item.Player;
 import run.Runner;
+import run.Util;
 
 /**
  * 
@@ -34,6 +37,8 @@ public class MatchCreator {
     private JPanel player1ListPanel;
     private JPanel player2ListPanel;
     private JPanel buttonPanel;
+    private JScrollPane p1ScrollPane;
+    private JScrollPane p2ScrollPane;
     private JList<Player> player1List;
     private JList<Player> player2List;
     private JLabel player1Label;
@@ -65,6 +70,8 @@ public class MatchCreator {
         basePanel = new JPanel();
         player1ListPanel = new JPanel();
         player2ListPanel = new JPanel();
+        p1ScrollPane = new JScrollPane(player1List);
+        p2ScrollPane = new JScrollPane(player2List);
         buttonPanel = new JPanel();
         player1Label = new JLabel("Player 1");
         player2Label = new JLabel("Player 2");
@@ -134,6 +141,9 @@ public class MatchCreator {
         cancelButton.setName("MatchCreator.Button.Cancel");
         checkEnableCreateButton();
 
+        p1ScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        p2ScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
         player1List.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
         player2List.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
 
@@ -154,9 +164,14 @@ public class MatchCreator {
     private void populatePlayerLists() {
         ArrayList<Player> players =
                 new ArrayList<>(Runner.getRunner().getAllPlayers());
-        players.sort(null);
-        player1List.setListData(players.toArray(new Player[0]));
-        player2List.setListData(players.toArray(new Player[0]));
+        players.sort(new Player.PlayerNameComparator());
+        if (Util.debugMode) {
+            for(Player p : players) {
+                Util.p(p.toString());
+            }
+        }
+        player1List.setListData(new Vector<>(players));
+        player2List.setListData(new Vector<>(players));
     }
 
     /**

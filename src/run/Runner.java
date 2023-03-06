@@ -22,6 +22,10 @@ public class Runner {
     private HashMap<String, Player> players;
     private HashMap<Long, Match> matches;
 
+    private Match undoPlaceHolder;
+    private double undoRatingChange;
+    private boolean undoEnabled;
+
     /**
      * Private constructor to designate Singleton status
      */
@@ -325,19 +329,54 @@ public class Runner {
         expectedScore = 1 / (1 + Math.pow(10, (Rat2 - Rat1)/400));
 
         if(match.getStatus() == 1) {
-            match.player1().adjustRating(+ k * (1 - expectedScore));
-            match.player2().adjustRating(- k * (1 - expectedScore));
-        } else if (match.getStatus() == 2) {
-            match.player1().adjustRating(- k * expectedScore);
-            match.player2().adjustRating(+ k * expectedScore);
+            double ratingChange = k * (1 - expectedScore);
+
+            undoRatingChange = ratingChange;
+            match.player1().adjustRating(+ratingChange);
+            match.player2().adjustRating(-ratingChange);
+        }
+        else if (match.getStatus() == 2) {
+            double ratingChange = k * expectedScore;
+
+            undoRatingChange = ratingChange;
+            match.player1().adjustRating(-ratingChange);
+            match.player2().adjustRating(+ratingChange);
         }
 
+        undoPlaceHolder = match;
         match.player1().addMatch(match);
         match.player2().addMatch(match);
 
         MatchIO.saveMatch(match);
         PlayerIO.savePlayer(match.player1());
         PlayerIO.savePlayer(match.player2());
+
+        undoEnabled = true;
+    }
+
+    /**
+     * Undo the last match decision, and revert the affected Players' rating
+     */
+    public void undoMatchDecision() {
+        int winner = undoPlaceHolder.getStatus();
+        if(undoPlaceHolder.revertResult()) {
+            int modifier = winner == 1 ? 1 : -1;
+            undoPlaceHolder.player1().adjustRating(modifier * undoRatingChange);
+            undoPlaceHolder.player2().adjustRating(-modifier * undoRatingChange);
+            undoEnabled = false;
+
+            MatchIO.saveMatch(undoPlaceHolder);
+            PlayerIO.savePlayer(undoPlaceHolder.player1());
+            PlayerIO.savePlayer(undoPlaceHolder.player2());
+        }
+    }
+
+    /**
+     * Check if there is a match able to be undone
+     * @return If a match is undoable
+     */
+    public boolean isUndoEnabled() {
+        return undoEnabled;
     }
 
     public boolean discardMatch(Match match) {

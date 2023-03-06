@@ -3,10 +3,14 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
@@ -67,11 +71,14 @@ public class MainUI {
     private JButton createMatchButton;
     private JButton recordMatchButton;
     private JButton discardMatchButton;
-
-    private static final Player dummy =
-            new Player("---------- ----------", "", 0, false);
+    private JButton undoMatchButton;
 
     private MainUIListener l;
+
+    public static final Player DUMMY =
+            new Player("---------- ----------", "", 0, false);
+    public static final Color GREEN =
+            new Color(32.0f/255, 200.0f/255, 77.0f/255);
 
     /**
      * 
@@ -128,6 +135,7 @@ public class MainUI {
         createMatchButton = new JButton("Create Match");
         recordMatchButton = new JButton("Record Match");
         discardMatchButton = new JButton("Discard Match");
+        undoMatchButton = new JButton("Undo Match Record");
     }
 
     /**
@@ -213,11 +221,13 @@ public class MainUI {
                     createMatchButton.setAlignmentX(Component.CENTER_ALIGNMENT);
                     recordMatchButton.setAlignmentX(Component.CENTER_ALIGNMENT);
                     discardMatchButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    undoMatchButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
                     matchControlPanel.add(findMatchButton);
                     matchControlPanel.add(createMatchButton);
                     matchControlPanel.add(recordMatchButton);
                     matchControlPanel.add(discardMatchButton);
+                    matchControlPanel.add(undoMatchButton);
                 }
             }
         }
@@ -237,10 +247,13 @@ public class MainUI {
         createMatchButton.addActionListener(l);
         recordMatchButton.addActionListener(l);
         discardMatchButton.addActionListener(l);
+        undoMatchButton.addActionListener(l);
         attendanceList.addListSelectionListener(l);
         playerList.addListSelectionListener(l);
         activeMatchesList.addListSelectionListener(l);
         previousMatchesList.addListSelectionListener(l);
+        activeMatchesList.addMouseListener(l);
+        rankingsList.addMouseListener(l);
     }
 
     /**
@@ -255,6 +268,9 @@ public class MainUI {
         createMatchButton.setName("MainUI.Button.createMatch");
         recordMatchButton.setName("MainUI.Button.recordMatch");
         discardMatchButton.setName("MainUI.Button.discardMatch");
+        undoMatchButton.setName("MainUI.Button.undoMatch");
+        activeMatchesList.setName("MainUI.List.ActiveMatches");
+        rankingsList.setName("MainUI.List.Rankings");
 
         attendanceList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
         playerList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
@@ -291,7 +307,7 @@ public class MainUI {
                 new ArrayList<>(Runner.getRunner().getAllPlayers());
         playersByName.sort(new Player.PlayerNameComparator());
         if(playersByName.isEmpty()) {
-            playersByName.add(dummy);
+            playersByName.add(DUMMY);
         }
         playerList.setListData(playersByName.toArray(new Player[0]));
 
@@ -299,7 +315,7 @@ public class MainUI {
                 new ArrayList<>(Runner.getRunner().getAllPlayers());
         playersByRank.sort(new Player.PlayerRankComparator());
         if(playersByRank.isEmpty()) {
-            playersByRank.add(dummy);
+            playersByRank.add(DUMMY);
         }
         rankingsList.setListData(playersByRank.toArray(new Player[0]));
     }
@@ -308,7 +324,7 @@ public class MainUI {
         ArrayList<Player> players =
                 new ArrayList<>(Runner.getRunner().getAttendance());
         if(players.isEmpty()) {
-            players.add(dummy);
+            players.add(DUMMY);
         }
         players.sort(new Player.PlayerMatchComparator());
         attendanceList.setListData(players.toArray(new Player[0]));
@@ -338,24 +354,25 @@ public class MainUI {
         checkEnableFindMatchButton();
         checkEnableRecordMatchButton();
         checkEnableDiscardMatchButton();
+        checkEnableUndoMatchButton();
     }
 
     private void checkEnableReturningPlayerButton() {
         returningArrivalButton.setEnabled(
                 playerList.getSelectedValue() != null &&
-                !playerList.getSelectedValue().equals(dummy));
+                !playerList.getSelectedValue().equals(DUMMY));
     }
 
     private void checkEnableRetirePlayerButton() {
         retirePlayerButton.setEnabled(
                 attendanceList.getSelectedValue() != null &&
-                !attendanceList.getSelectedValue().equals(dummy));
+                !attendanceList.getSelectedValue().equals(DUMMY));
     }
 
     private void checkEnableEditPlayerButton() {
         editPlayerButton.setEnabled(
                 playerList.getSelectedValue() != null &&
-                !playerList.getSelectedValue().equals(dummy));
+                !playerList.getSelectedValue().equals(DUMMY));
     }
 
     private void checkEnableFindMatchButton() {
@@ -371,6 +388,10 @@ public class MainUI {
     private void checkEnableDiscardMatchButton() {
         discardMatchButton.setEnabled(
                 activeMatchesList.getSelectedValue() != null);
+    }
+
+    private void checkEnableUndoMatchButton() {
+        undoMatchButton.setEnabled(Runner.getRunner().isUndoEnabled());
     }
 
     private void newArrival() {
@@ -405,6 +426,11 @@ public class MainUI {
         new MatchRecorder(this, activeMatchesList.getSelectedValue());
     }
 
+    private void undoMatch() {
+        Runner.getRunner().undoMatchDecision();
+        update();
+    }
+
     private void discardMatch() {
         Match m = activeMatchesList.getSelectedValue();
         String discardMatchMessage = "";
@@ -420,7 +446,8 @@ public class MainUI {
         update();
     }
 
-    private class MainUIListener implements ActionListener, ListSelectionListener{
+    private class MainUIListener extends MouseAdapter implements ActionListener,
+    ListSelectionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -457,6 +484,10 @@ public class MainUI {
                     case "MainUI.Button.discardMatch" :
                         discardMatch();
                         break;
+
+                    case "MainUI.Button.undoMatch" :
+                        undoMatch();
+                        break;
                 }
             } catch (Exception e1) {
                 e1.printStackTrace();
@@ -466,6 +497,26 @@ public class MainUI {
         @Override
         public void valueChanged(ListSelectionEvent e) {
             checkEnabledButtons();
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent arg0) {
+            switch(((Container) arg0.getSource()).getName()) {
+                case "MainUI.List.ActiveMatches" :
+                    if (arg0.getClickCount() == 2) {
+                        openMatchRecorder();
+                    }
+                    break;
+                case "MainUI.List.Rankings" :
+                    if (arg0.getClickCount() == 2) {
+                        Player p = rankingsList.getSelectedValue();
+                        JOptionPane.showMessageDialog(window,
+                                p.toString() + ": " + p.getRating(),
+                                "Rating Display",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    break;
+            }
         }
     }
 }
@@ -488,8 +539,9 @@ class RankingsCellRenderer extends DefaultListCellRenderer {
         Color background = Color.WHITE;
         Color foreground =
                 player.getNumMatchesPlayed() < 5 ? Color.MAGENTA :
-                    !player.isConfirmed() ? Color.GREEN :
-                        Color.BLACK;
+                    !player.isConfirmed() ?
+                            MainUI.GREEN :
+                                Color.BLACK;
 
         Component c = super.getListCellRendererComponent(list, value, index,
                 isSelected, cellHasFocus);
@@ -513,12 +565,23 @@ class PlayerCellRenderer extends DefaultListCellRenderer {
             Object value, int index, boolean isSelected, boolean cellHasFocus) {
         Player player = (Player) value;
 
-        value = player.toString();
+        Collection<Match> activeMatches = Runner.getRunner().getCurrMatches();
+        boolean playing = false;
+
+        for (Match match : activeMatches) {
+            if(player.equals(match.player1()) ||
+                    player.equals(match.player2())) {
+                playing = true;
+                break;
+            }
+        }
+
+        value = (playing ? "*" : "") + player.toString();
 
         Color background = Color.WHITE;
         Color foreground =
                 player.getNumMatchesPlayed() < 5 ? Color.MAGENTA :
-                    !player.isConfirmed() ? Color.GREEN :
+                    !player.isConfirmed() ? MainUI.GREEN :
                         Color.BLACK;
 
         Component c = super.getListCellRendererComponent(list, value, index,
